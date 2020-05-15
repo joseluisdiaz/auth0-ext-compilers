@@ -34,8 +34,11 @@ describe('client-credentials-exchange', function () {
                 body: { client: { id: 'client' }, audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -60,8 +63,11 @@ describe('client-credentials-exchange', function () {
                 body: { client: { id: 'client' }, scope: ['scope'], audience: 'audience', context: { hello: 'world', foo: 'bar' } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -93,8 +99,11 @@ describe('client-credentials-exchange', function () {
                 headers: {},
                 method: 'POST',
                 parseBody: false,
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -126,8 +135,11 @@ describe('client-credentials-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer foo' },
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -158,8 +170,10 @@ describe('client-credentials-exchange', function () {
                 body: { client: { id: 'client' }, scope: ['scope'], audience: 'audience' },
                 headers: { 'authorization': 'Bearer foo' },
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, "success");
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(data.type, 'object');
@@ -181,10 +195,10 @@ describe('client-credentials-exchange', function () {
                 body: 'no good',
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
@@ -200,10 +214,10 @@ describe('client-credentials-exchange', function () {
                 body: { client: 'client', audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
@@ -219,10 +233,10 @@ describe('client-credentials-exchange', function () {
                 body: { client: {}, scope: 'scope', audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
@@ -238,10 +252,10 @@ describe('client-credentials-exchange', function () {
                 body: { client: {}, scope: 'scope', audience: [] },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
@@ -258,10 +272,10 @@ describe('client-credentials-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
@@ -278,13 +292,145 @@ describe('client-credentials-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer bar' },
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, 'error');
                 done();
             });
         });
     });
 
+    describe("when an error is thrown", () => {
+      it("transforms vanilla Errors into an error payload", function (done) {
+        compiler(
+          {
+            nodejsCompiler,
+            script: `module.exports = function(client, scope, audience, context, cb) {
+                            cb(new Error('vanilla error'));
+                        };`,
+          },
+          function (error, func) {
+            Assert.ifError(error);
+
+            simulate(
+              func,
+              {
+                body: { client: { id: "client" }, audience: "audience" },
+                headers: {},
+                method: "POST",
+              },
+                function (error, envelope) {
+                Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.ok(data);
+                Assert.equal(status, "error");
+                Assert.equal(data.message, "vanilla error");
+                done();
+              }
+            );
+          }
+        );
+      });
+
+      it("transforms InvalidRequestErrors into an error payload", function (done) {
+        compiler(
+          {
+            nodejsCompiler,
+            script: `module.exports = function(client, scope, audience, context, cb) {
+                        cb(new InvalidRequestError('bad request'));
+                     };`,
+          },
+          function (error, func) {
+            Assert.ifError(error);
+
+            simulate(
+              func,
+              {
+                body: { client: { id: "client" }, audience: "audience" },
+                headers: {},
+                method: "POST",
+              },
+              function (error, envelope) {
+                Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.ok(data);
+                Assert.equal(status, "error");
+                Assert.equal(data.name, "InvalidRequestError");
+                Assert.equal(data.message, "bad request");
+                done();
+              }
+            );
+          }
+        );
+      });
+
+      it("transforms InvalidScopeErrors into an error payload", function (done) {
+        compiler(
+          {
+            nodejsCompiler,
+            script: `module.exports = function(client, scope, audience, context, cb) {
+                        cb(new InvalidScopeError('bad scope'));
+                     };`,
+          },
+          function (error, func) {
+            Assert.ifError(error);
+
+            simulate(
+              func,
+              {
+                body: { client: { id: "client" }, audience: "audience" },
+                headers: {},
+                method: "POST",
+              },
+              function (error, envelope) {
+                Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.ok(data);
+                Assert.equal(status, "error");
+                Assert.equal(data.name, "InvalidScopeError");
+                Assert.equal(data.message, "bad scope");
+                done();
+              }
+            );
+          }
+        );
+      });
+
+      it("transforms Server Error into an error payload", function (done) {
+        compiler(
+          {
+            nodejsCompiler,
+            script: `module.exports = function(client, scope, audience, context, cb) {
+                        cb(new ServerError('server failure'));
+                     };`,
+          },
+          function (error, func) {
+            Assert.ifError(error);
+
+            simulate(
+              func,
+              {
+                body: { client: { id: "client" }, audience: "audience" },
+                headers: {},
+                method: "POST",
+              },
+              function (error, envelope) {
+                Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.ok(data);
+                Assert.equal(status, "error");
+                Assert.equal(data.name, "ServerError");
+                Assert.equal(data.message, "server failure");
+                done();
+              }
+            );
+          }
+        );
+      });
+    });
 });

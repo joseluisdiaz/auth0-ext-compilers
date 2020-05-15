@@ -5,7 +5,7 @@
     "url": "http://tomasz.janczuk.org",
     "twitter": "tjanczuk"
   },
-  "version": "5.5.3",
+  "version": "6.0.0",
   "description": "Webtask compilers for Auth0 platform extensibility points",
   "engines": {
     "node": ">= 4.3"
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "mocha": "^7.0.1",
+    "sinon": "^9.0.2",
     "webtask-runtime": "^1.3.0"
   },
   "scripts": {

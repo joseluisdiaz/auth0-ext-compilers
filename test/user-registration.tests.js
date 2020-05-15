@@ -34,8 +34,11 @@ describe('user-registration', function () {
                 body: { user: {}, context: { connection: {} } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(Object.keys(data).length, 0);
@@ -55,8 +58,11 @@ describe('user-registration', function () {
                 body: { user: {}, context: { connection: {} } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                Assert.ok(envelope);
+                const { status, data } = envelope;
+                Assert.equal(status, 'success');
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.user, 'object');
@@ -79,11 +85,12 @@ describe('user-registration', function () {
                 body: 'no good',
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Body received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -99,11 +106,12 @@ describe('user-registration', function () {
                 body: { user: 'bad user', context: { connection: {} } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.user received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Body.user received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -119,11 +127,12 @@ describe('user-registration', function () {
                 body: { user: {}, context: 'bad context' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.context received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Body.context received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -139,11 +148,12 @@ describe('user-registration', function () {
                 body: { user: {}, context: { connection: 'bad connection' } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.context.connection received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Body.context.connection received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -160,11 +170,12 @@ describe('user-registration', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Unauthorized extensibility point');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Unauthorized extensibility point');
+                
                 done();
             });
         });
@@ -181,11 +192,35 @@ describe('user-registration', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer bar' },
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Unauthorized extensibility point');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.message, 'Unauthorized extensibility point');
+
+                done();
+            });
+        });
+    });
+
+    it('provides a custom error object', function (done) {
+        compiler({
+            nodejsCompiler,
+            script: 'module.exports = function(user, context, cb) { cb(new PreUserRegistrationError("message", "friendly message")); };'
+        }, function (error, func) {
+            Assert.ifError(error);
+            simulate(func, {
+                body: { user: {}, context: { connection: {} } },
+                headers: {},
+                method: 'POST',
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status, data } = envelope;
+                Assert.equal(status, 'error');
+                Assert.equal(data.name, 'PreUserRegistrationError');
+                Assert.equal(data.message, 'message');
+                Assert.equal(data.friendlyMessage, 'friendly message');
+
                 done();
             });
         });

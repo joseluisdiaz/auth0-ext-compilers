@@ -34,8 +34,9 @@ describe('generic', function () {
                 body: { id: 'client' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(data.id, 'client');
@@ -58,8 +59,9 @@ describe('generic', function () {
                 headers: {},
                 method: 'POST',
                 parseBody: false,
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(data.id, 'client');
@@ -81,8 +83,9 @@ describe('generic', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer foo' },
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(data.id, 'client');
@@ -104,10 +107,10 @@ describe('generic', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, "error");
                 done();
             });
         });
@@ -124,10 +127,10 @@ describe('generic', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer bar' },
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { status } = envelope;
+                Assert.equal(status, "error");
                 done();
             });
         });

@@ -103,3 +103,63 @@ module.exports = function(ctx, req, res) {
   res.end(JSON.stringify(access_token));
 };
 ```
+
+### Response Contracts Guidlines
+
+When building a compiler for a hook, all responses should be status code 200.
+
+If the following guidelines are not followed, the client (auth0-ext) will not process the response correctly.
+
+
+```
+{
+  status: 'success' | 'error',
+  data: {}
+}
+
+```
+
+#### Success
+
+Response should contain:
+`status = 'success'`
+
+Success conditions should be when the code ran to completion and returning the response in the `data` property.
+
+Example response:
+
+```json
+{
+    "status": "success",
+    "data": {
+        "user": {
+            "user_metadata": "object",
+            "app_metadata": "object",
+            // other properties are ignored
+        }
+    }
+}
+```
+
+
+#### Error
+
+Response should contain:
+`status = 'error'`
+
+Error conditions should be when there is an error thrown in the script. This error object should  be passed in to the `data` property.
+
+Example response:
+
+```json
+{
+    "status": "error",
+    "data": {
+        "stack": "ServerError: server error message\n    at module.exports ...",
+        "message": "server error message",
+        "name": "ServerError"
+    }
+}
+```
+
+

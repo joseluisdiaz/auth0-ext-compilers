@@ -18,14 +18,8 @@ module.exports = function simulate(ruleFn, options, cb) {
         if (response.statusCode >= 400) {
             const error = new Error(payload.message);
 
-            error.title = payload.title;
-            error.statusCode = payload.status;
-            error.detail = payload.detail;
-
             for (let key in payload) {
-                if (!error[key]) {
-                    error[key] = payload[key];
-                }
+                error[key] = payload[key];
             }
             return cb(error);
         }

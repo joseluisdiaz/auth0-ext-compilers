@@ -34,8 +34,9 @@ describe('password-exchange', function () {
                 body: { user: {}, client: { id: 'client' }, audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -60,8 +61,9 @@ describe('password-exchange', function () {
                 body: { user: {}, client: { id: 'client' }, scope: ['scope'], audience: 'audience', context: { hello: 'world', foo: 'bar' } },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -93,8 +95,9 @@ describe('password-exchange', function () {
                 headers: {},
                 method: 'POST',
                 parseBody: false,
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -126,8 +129,9 @@ describe('password-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer foo' },
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(typeof data.client, 'object');
@@ -158,8 +162,9 @@ describe('password-exchange', function () {
                 body: { user: {}, client: { id: 'client' }, scope: ['scope'], audience: 'audience' },
                 headers: { 'authorization': 'Bearer foo' },
                 method: 'POST',
-            }, function (error, data) {
+            }, function (error, envelope) {
                 Assert.ifError(error);
+                const { data } = envelope;
                 Assert.ok(data);
                 Assert.equal(typeof data, 'object');
                 Assert.equal(data.type, 'object');
@@ -181,11 +186,11 @@ describe('password-exchange', function () {
                 body: 'no good',
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, 'Body received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -201,11 +206,11 @@ describe('password-exchange', function () {
                 body: { user: 'bad user', client: {}, audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.user received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, 'Body.user received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -221,11 +226,11 @@ describe('password-exchange', function () {
                 body: { user: {}, client: 'client', audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.client received by extensibility point is not an object');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, 'Body.client received by extensibility point is not an object');
+                
                 done();
             });
         });
@@ -241,11 +246,11 @@ describe('password-exchange', function () {
                 body: { user: {}, client: {}, scope: 'scope', audience: 'audience' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.scope received by extensibility point is neither empty nor an array');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, 'Body.scope received by extensibility point is neither empty nor an array');
+                
                 done();
             });
         });
@@ -261,11 +266,11 @@ describe('password-exchange', function () {
                 body: { client: {}, scope: 'scope', audience: [] },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Body.audience received by extensibility point is not a string');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, 'Body.audience received by extensibility point is not a string');
+                
                 done();
             });
         });
@@ -282,11 +287,11 @@ describe('password-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: {},
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Unauthorized extensibility point');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, "Unauthorized extensibility point");
+                
                 done();
             });
         });
@@ -303,11 +308,11 @@ describe('password-exchange', function () {
                 secrets: { 'auth0-extension-secret': 'foo' },
                 headers: { 'authorization': 'Bearer bar' },
                 method: 'POST',
-            }, function (error, data) {
-                Assert.ok(error);
-                Assert.equal(error.statusCode, 500);
-                Assert.equal(error.message, 'Unauthorized extensibility point');
-                Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                Assert.ifError(error);
+                const { data } = envelope;
+                Assert.equal(data.message, "Unauthorized extensibility point");
+                
                 done();
             });
         });

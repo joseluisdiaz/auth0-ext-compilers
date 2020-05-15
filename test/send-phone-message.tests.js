@@ -35,11 +35,11 @@ describe('send-phone-message', function () {
                     body: {text: 'dis iz a text', context: {}},
                     headers: {},
                     method: 'POST',
-                }, function (error, data) {
-                    Assert.ok(error);
-                    Assert.equal(error.statusCode, 500);
-                    Assert.equal(error.message, 'Body.recipient received by extensibility point is not a string');
-                    Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, "error");
+                    Assert.equal(data.message, 'Body.recipient received by extensibility point is not a string');
                     done();
                 });
             });
@@ -55,11 +55,12 @@ describe('send-phone-message', function () {
                     body: {recipient: '1-999-888-657-2134', context: {}},
                     headers: {},
                     method: 'POST',
-                }, function (error, data) {
-                    Assert.ok(error);
-                    Assert.equal(error.statusCode, 500);
-                    Assert.equal(error.message, 'Body.text received by extensibility point is not a string');
-                    Assert.equal(data, undefined);
+            }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, "error");
+                    Assert.equal(data.message, 'Body.text received by extensibility point is not a string');
+                    
                     done();
                 });
             });
@@ -76,11 +77,11 @@ describe('send-phone-message', function () {
                         body: {recipient: '1-999-888-657-2134', text: 'dis iz a text', context: 'context'},
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context received by extensibility point is not an object');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { data } = envelope;
+                        Assert.equal(data.message, 'Body.context received by extensibility point is not an object');
+                        
                         done();
                     });
                 });
@@ -101,11 +102,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.message_type received by extensibility point is not `sms` or `voice`');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.message_type received by extensibility point is not `sms` or `voice`');
+                        
                         done();
                     });
                 });
@@ -126,9 +128,11 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.notEqual(error.message, 'Body.context.message_type received by extensibility point is not `sms` or `voice`');
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.notEqual(data.message, 'Body.context.message_type received by extensibility point is not `sms` or `voice`');
                         done();
                     });
                 });
@@ -150,9 +154,11 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.notEqual(error.message, 'Body.context.action received by extensibility point is not `enrollment` or `second-factor-authentication`');
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.notEqual(data.message, 'Body.context.action received by extensibility point is not `enrollment` or `second-factor-authentication`');
                         done();
                     });
                 });
@@ -174,11 +180,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.action received by extensibility point is not `enrollment` or `second-factor-authentication`');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.action received by extensibility point is not `enrollment` or `second-factor-authentication`');
+                        
                         done();
                     });
                 });
@@ -201,11 +208,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.language received by extensibility point is not a string');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.language received by extensibility point is not a string');
+                        
                         done();
                     });
                 });
@@ -229,11 +237,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.code received by extensibility point is not a string');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.code received by extensibility point is not a string');
+                        
                         done();
                     });
                 });
@@ -258,11 +267,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.ip received by extensibility point is not a string');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.ip received by extensibility point is not a string');
+                        
                         done();
                     });
                 });
@@ -289,11 +299,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.user_agent received by extensibility point is not a string');
-                        Assert.equal(data, undefined);
+                    }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.user_agent received by extensibility point is not a string');
+                        
                         done();
                     });
                 });
@@ -321,11 +332,12 @@ describe('send-phone-message', function () {
                             },
                             headers: {},
                             method: 'POST',
-                        }, function (error, data) {
-                            Assert.ok(error);
-                            Assert.equal(error.statusCode, 500);
-                            Assert.equal(error.message, 'Body.context.client received by extensibility point is not an object');
-                            Assert.equal(data, undefined);
+                        }, function (error, envelope) {
+                            Assert.ifError(error);
+                            const { status, data } = envelope;
+                            Assert.equal(status, "error");
+                            Assert.equal(data.message, 'Body.context.client received by extensibility point is not an object');
+                            
                             done();
                         });
                     });
@@ -353,11 +365,12 @@ describe('send-phone-message', function () {
                             },
                             headers: {},
                             method: 'POST',
-                        }, function (error, data) {
-                            Assert.ok(error);
-                            Assert.equal(error.statusCode, 500);
-                            Assert.equal(error.message, 'Body.context.client.client_id received by extensibility point is not a string');
-                            Assert.equal(data, undefined);
+                        }, function (error, envelope) {
+                            Assert.ifError(error);
+                            const { status, data } = envelope;
+                            Assert.equal(status, "error");
+                            Assert.equal(data.message, 'Body.context.client.client_id received by extensibility point is not a string');
+                            
                             done();
                         });
                     });
@@ -386,11 +399,12 @@ describe('send-phone-message', function () {
                             },
                             headers: {},
                             method: 'POST',
-                        }, function (error, data) {
-                            Assert.ok(error);
-                            Assert.equal(error.statusCode, 500);
-                            Assert.equal(error.message, 'Body.context.client.name received by extensibility point is not a string');
-                            Assert.equal(data, undefined);
+                        }, function (error, envelope) {
+                            Assert.ifError(error);
+                            const { status, data } = envelope;
+                            Assert.equal(status, "error");
+                            Assert.equal(data.message, 'Body.context.client.name received by extensibility point is not a string');
+                            
                             done();
                         });
                     });
@@ -419,11 +433,12 @@ describe('send-phone-message', function () {
                             },
                             headers: {},
                             method: 'POST',
-                        }, function (error, data) {
-                            Assert.ok(error);
-                            Assert.equal(error.statusCode, 500);
-                            Assert.equal(error.message, 'Body.context.client.client_metadata received by extensibility point is not an object');
-                            Assert.equal(data, undefined);
+                        }, function (error, envelope) {
+                            Assert.ifError(error);
+                            const { status, data } = envelope;
+                            Assert.equal(status, "error");
+                            Assert.equal(data.message, 'Body.context.client.client_metadata received by extensibility point is not an object');
+                            
                             done();
                         });
                     });
@@ -455,11 +470,12 @@ describe('send-phone-message', function () {
                         },
                         headers: {},
                         method: 'POST',
-                    }, function (error, data) {
-                        Assert.ok(error);
-                        Assert.equal(error.statusCode, 500);
-                        Assert.equal(error.message, 'Body.context.user received by extensibility point is not an object');
-                        Assert.equal(data, undefined);
+                        }, function (error, envelope) {
+                        Assert.ifError(error);
+                        const { status, data } = envelope;
+                        Assert.equal(status, "error");
+                        Assert.equal(data.message, 'Body.context.user received by extensibility point is not an object');
+                        
                         done();
                     });
                 });
@@ -489,8 +505,11 @@ describe('send-phone-message', function () {
                     },
                     headers: {},
                     method: 'POST',
-                }, function (error, data) {
-                    Assert.equal(error, null);
+                }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, "success");
+                    Assert.ok(data);
                     done();
                 });
             });
@@ -522,8 +541,11 @@ describe('send-phone-message', function () {
                     },
                     headers: {},
                     method: 'POST',
-                }, function (error, data) {
-                    Assert.equal(error, null);
+                }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, "success");
+                    Assert.ok(data);
                     done();
                 });
             });
@@ -555,8 +577,11 @@ describe('send-phone-message', function () {
                     },
                     headers: {},
                     method: 'POST',
-                }, function (error, data) {
-                    Assert.equal(error, null);
+                }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, "success");
+                    Assert.ok(data);
                     done();
                 });
             });
