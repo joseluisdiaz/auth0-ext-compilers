@@ -586,5 +586,45 @@ describe('send-phone-message', function () {
                 });
             });
         });
+
+        it('provides a custom error object', function (done) {
+            compiler({
+                nodejsCompiler,
+                script: 'module.exports = function(recipient, text, context, cb) { cb(new SendPhoneMessageError("e1", "e2")); };'
+            }, function (error, func) {
+                Assert.ifError(error);
+
+                simulate(func, {
+                    body: {
+                        recipient: '1-999-888-657-2134', text: 'dis iz a text', context: {
+                            message_type: 'sms',
+                            action: 'second-factor-authentication',
+                            language: 'korean',
+                            code: 'SOMEOTP12345',
+                            ip: '127.0.0.1',
+                            user_agent: 'someAgent',
+                            user: {},
+                            client: {
+                                client_id: 'someClientId',
+                                name: 'Test Application',
+                                client_metadata: {}
+                            }
+                        }
+                    },
+                    headers: {},
+                    method: 'POST',
+                }, function (error, envelope) {
+                    Assert.ifError(error);
+                    const { status, data } = envelope;
+                    Assert.equal(status, 'error');
+                    Assert.equal(data.name, 'SendPhoneMessageError');
+                    Assert.equal(data.message, 'e1');
+                    Assert.equal(data.friendlyMessage, 'e2');
+
+                    done();
+                });
+            });
+        });
+
     }); // valid payload
 });
